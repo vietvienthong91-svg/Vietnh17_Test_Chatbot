@@ -45,11 +45,9 @@ app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
 PORT = int(os.environ.get("PORT", 10000))
 
-RENDER_URL = "https://vietnh17-test-chatbot.onrender.com"
-
 app.run_webhook(
     listen="0.0.0.0",
     port=PORT,
-    webhook_url=RENDER_URL + "/" + TOKEN,
-    path=TOKEN
+    webhook_url=f"https://vietnh17-test-chatbot.onrender.com/{TOKEN}"
+)
 )
