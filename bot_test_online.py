@@ -48,6 +48,6 @@ PORT = int(os.environ.get("PORT", 10000))
 app.run_webhook(
     listen="0.0.0.0",
     port=PORT,
-    webhook_url=f"https://vietnh17-test-chatbot.onrender.com/{TOKEN}"
+    webhook_url=f"https://vietnh17-test-chatbot.onrender.com/{TOKEN}",
     url_path=TOKEN
 )
