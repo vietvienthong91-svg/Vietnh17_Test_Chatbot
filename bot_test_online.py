@@ -28,13 +28,13 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
 
-    # ===== 1️⃣ Hello =====
+    # ===== 1️ Hello =====
     if text.lower() == "hello":
         await update.message.reply_text("Xin chào, tôi có thể giúp gì cho bạn?")
         return
 
     # =====================================================
-    # ===== 2️⃣ CẬP NHẬT TIẾN ĐỘ ST.[MaSite].[A/B/C]
+    # ===== 2️ CẬP NHẬT TIẾN ĐỘ ST.[MaSite].[A/B/C]
     # =====================================================
 
     if text.startswith("ST."):
@@ -80,7 +80,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # =====================================================
-    # ===== 3️⃣ TRA CỨU AD.[TênSite]
+    # ===== 3️ TRA CỨU AD.[TênSite]
     # =====================================================
 
     if text.startswith("AD."):
@@ -94,19 +94,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 xa = row[1]
                 dia_chi = row[2]
                 await update.message.reply_text(
-                    f"Xã: {xa}\nĐịa chỉ: {dia_chi}"
+                    f"Kết quả tra cứu của mã nhà trạm {site_name} là: \n \nXã: {xa}\nĐịa chỉ: {dia_chi}"
                 )
                 return
 
         await update.message.reply_text("Không tìm thấy dữ liệu.")
         return
 
-    # ===== 4️⃣ Sai cú pháp =====
+    # ===== 4 Sai cú pháp =====
     await update.message.reply_text(
         "Sai cú pháp!\n\n"
         "Tra cứu: AD.[TênSite]\n"
         "Cập nhật tiến độ: ST.[MãSite].[A/B/C]"
     )
+
+    # ===== 5 Bye =====
+    if text.lower() == "bye":
+        await update.message.reply_text("Chúc bạn ngày mới tốt lành")
+        return
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
