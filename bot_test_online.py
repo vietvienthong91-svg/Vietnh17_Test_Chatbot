@@ -14,7 +14,7 @@ SHEET_ID = os.environ.get("SHEET_ID")
 # ===== SERVICE ACCOUNT JSON từ ENV =====
 service_account_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS"))
 
-scopes = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+scopes = ["https://www.googleapis.com/auth/spreadsheets"]
 
 creds = Credentials.from_service_account_info(
     service_account_info,
@@ -28,42 +28,84 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
 
-    # ===== 1️⃣ Nếu người dùng gõ Hello =====
+    # ===== 1️⃣ Hello =====
     if text.lower() == "hello":
         await update.message.reply_text("Xin chào, tôi có thể giúp gì cho bạn?")
         return
 
-    # ===== 2️⃣ Kiểm tra cú pháp AD.[Tên Site] =====
-    if not text.startswith("AD."):
-        await update.message.reply_text(
-            "Vui lòng nhập đúng cú pháp:\n\nAD.[Tên Site]\n\nVí dụ: AD.LDG0001"
-        )
-        return
+    # =====================================================
+    # ===== 2️⃣ CẬP NHẬT TIẾN ĐỘ ST.[MaSite].[A/B/C]
+    # =====================================================
 
-    # ===== 3️⃣ Lấy tên site sau AD. =====
-    site_name = text[3:].strip()
+    if text.startswith("ST."):
+        parts = text.split(".")
 
-    if not site_name:
-        await update.message.reply_text(
-            "Bạn chưa nhập tên Site.\nVí dụ: AD.LDG0001"
-        )
-        return
-
-    # ===== 4️⃣ Tra cứu Google Sheet =====
-    data = sheet.get_all_values()
-
-    for row in data:
-        if len(row) >= 3 and row[0].strip().lower() == site_name.lower():
-            xa = row[1]
-            dia_chi = row[2]
+        if len(parts) != 3:
             await update.message.reply_text(
-                f"Kết quả tra cứu của nhà trạm {site_name} là: \n\nXã: {xa}\nĐịa chỉ: {dia_chi}"
+                "Sai cú pháp!\nVui lòng nhập:\nST.[MãSite].[A/B/C]"
             )
             return
 
-    # ===== 5️⃣ Nếu không tìm thấy =====
+        site_code = parts[1].strip()
+        status_code = parts[2].strip().upper()
+
+        status_map = {
+            "A": "Chưa thực hiện",
+            "B": "Đang thực hiện",
+            "C": "Hoàn thành"
+        }
+
+        if status_code not in status_map:
+            await update.message.reply_text(
+                "Giá trị tiến độ không hợp lệ!\nChỉ dùng A, B hoặc C."
+            )
+            return
+
+        status_text = status_map[status_code]
+
+        data = sheet.get_all_values()
+
+        for index, row in enumerate(data):
+            if len(row) >= 1 and row[0].strip().lower() == site_code.lower():
+
+                # Cập nhật cột D (cột thứ 4)
+                sheet.update_cell(index + 1, 4, status_text)
+
+                await update.message.reply_text(
+                    f"Đã cập nhật tiến độ cho {site_code}:\n{status_text}"
+                )
+                return
+
+        await update.message.reply_text("Không tìm thấy Mã Site.")
+        return
+
+    # =====================================================
+    # ===== 3️⃣ TRA CỨU AD.[TênSite]
+    # =====================================================
+
+    if text.startswith("AD."):
+
+        site_name = text[3:].strip()
+
+        data = sheet.get_all_values()
+
+        for row in data:
+            if len(row) >= 3 and row[0].strip().lower() == site_name.lower():
+                xa = row[1]
+                dia_chi = row[2]
+                await update.message.reply_text(
+                    f"Xã: {xa}\nĐịa chỉ: {dia_chi}"
+                )
+                return
+
+        await update.message.reply_text("Không tìm thấy dữ liệu.")
+        return
+
+    # ===== 4️⃣ Sai cú pháp =====
     await update.message.reply_text(
-        "Không tìm thấy Site trong hệ thống.\nVui lòng kiểm tra lại tên."
+        "Sai cú pháp!\n\n"
+        "Tra cứu: AD.[TênSite]\n"
+        "Cập nhật tiến độ: ST.[MãSite].[A/B/C]"
     )
 
 app = ApplicationBuilder().token(TOKEN).build()
