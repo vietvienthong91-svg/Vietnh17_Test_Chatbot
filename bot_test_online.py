@@ -45,7 +45,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # =====================================================
 
     if text.startswith("ST."):
-    parts = text.split(".")
+        parts = text.split(".")
 
     if len(parts) != 3:
         await update.message.reply_text(
