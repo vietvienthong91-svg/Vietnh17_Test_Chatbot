@@ -33,8 +33,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Xin chào, tôi có thể giúp gì cho bạn?")
         return
 
+    # ===== 2 Bye =====
+    if text.lower() == "bye":
+        await update.message.reply_text("Chúc bạn ngày mới tốt lành")
+        return
+
     # =====================================================
-    # ===== 2️ CẬP NHẬT TIẾN ĐỘ ST.[MaSite].[A/B/C]
+    # ===== 3 CẬP NHẬT TIẾN ĐỘ ST.[MaSite].[A/B/C]
     # =====================================================
 
     if text.startswith("ST."):
@@ -80,10 +85,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # =====================================================
-    # ===== 3️ TRA CỨU AD.[TênSite]
+    # ===== 4 TRA CỨU TC.[TênSite]
     # =====================================================
 
-    if text.startswith("AD."):
+    if text.startswith("TC."):
 
         site_name = text[3:].strip()
 
@@ -93,25 +98,29 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if len(row) >= 3 and row[0].strip().lower() == site_name.lower():
                 xa = row[1]
                 dia_chi = row[2]
+
+                table = (
+                "+------------+------------------+\n"
+                f"| Xã         | {xa:<16} |\n"
+                "+------------+------------------+\n"
+                f"| Địa chỉ    | {dia_chi:<16} |\n"
+                "+------------+------------------+"
+                )
+
                 await update.message.reply_text(
-                    f"Kết quả tra cứu của mã nhà trạm {site_name} là: \n \nXã: {xa}\nĐịa chỉ: {dia_chi}"
+                    f"Kết quả tra cứu của mã nhà trạm {site_name} là: \n <pre>{table}</pre>",parse_mode="HTML"
                 )
                 return
 
         await update.message.reply_text("Không tìm thấy dữ liệu.")
         return
 
-    # ===== 4 Sai cú pháp =====
+    # ===== 5 Sai cú pháp =====
     await update.message.reply_text(
         "Sai cú pháp!\n\n"
-        "Tra cứu: AD.[TênSite]\n"
+        "Tra cứu: TC.[TênSite]\n"
         "Cập nhật tiến độ: ST.[MãSite].[A/B/C]"
     )
-
-    # ===== 5 Bye =====
-    if text.lower() == "bye":
-        await update.message.reply_text("Chúc bạn ngày mới tốt lành")
-        return
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
