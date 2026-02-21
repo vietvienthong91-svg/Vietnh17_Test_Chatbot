@@ -36,7 +36,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ===== 2️⃣ Kiểm tra cú pháp AD.[Tên Site] =====
     if not text.startswith("AD."):
         await update.message.reply_text(
-            "Vui lòng nhập đúng cú pháp:\n\nAD.[Tên Site]\n\nVí dụ: AD.Site01"
+            "Vui lòng nhập đúng cú pháp:\n\nAD.[Tên Site]\n\nVí dụ: AD.LDG0001"
         )
         return
 
@@ -45,7 +45,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not site_name:
         await update.message.reply_text(
-            "Bạn chưa nhập tên Site.\nVí dụ đúng: AD.Site01"
+            "Bạn chưa nhập tên Site.\nVí dụ: AD.LDG0001"
         )
         return
 
@@ -57,7 +57,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             xa = row[1]
             dia_chi = row[2]
             await update.message.reply_text(
-                f"Kết quả tra cứu:\n\nXã: {xa}\nĐịa chỉ: {dia_chi}"
+                f"Kết quả tra cứu của nhà trạm {site_name} là: \n\nXã: {xa}\nĐịa chỉ: {dia_chi}"
             )
             return
 
