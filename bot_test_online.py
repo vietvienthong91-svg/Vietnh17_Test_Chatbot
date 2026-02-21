@@ -101,9 +101,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
                 table = (
                 "+------------+------------------+\n"
-                f"| Xã         | {xa:<16} |\n"
+                f"| 📍Xã         | {xa:<22} |\n"
                 "+------------+------------------+\n"
-                f"| Địa chỉ    | {dia_chi:<16} |\n"
+                f"| 🏠Địa chỉ    | {dia_chi:<22} |\n"
                 "+------------+------------------+"
                 )
 
