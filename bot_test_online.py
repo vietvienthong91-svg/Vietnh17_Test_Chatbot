@@ -47,59 +47,59 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text.startswith("ST."):
         parts = text.split(".")
 
-    if len(parts) != 3:
-        await update.message.reply_text(
-            "Sai cú pháp!\nVui lòng nhập:\nST.[MãSite].[A/B/C]"
-        )
-        return
-
-    site_code = parts[1].strip()
-    status_code = parts[2].strip().upper()
-
-    status_map = {
-        "A": "Chưa thực hiện",
-        "B": "Đang thực hiện",
-        "C": "Hoàn thành"
-    }
-
-    if status_code not in status_map:
-        await update.message.reply_text(
-            "Giá trị tiến độ không hợp lệ!\nChỉ dùng A, B hoặc C."
-        )
-        return
-
-    # ===== Nếu là B thì hỏi thêm lý do =====
-    if status_code == "B":
-
-        keyboard = [
-            [InlineKeyboardButton("Chưa lắp xong", callback_data=f"{site_code}|Chưa lắp xong")],
-            [InlineKeyboardButton("Lỗi lắp đặt", callback_data=f"{site_code}|Lỗi lắp đặt")],
-            [InlineKeyboardButton("Lỗi thiết bị", callback_data=f"{site_code}|Lỗi thiết bị")],
-            [InlineKeyboardButton("Lỗi cấu hình", callback_data=f"{site_code}|Lỗi cấu hình")]
-        ]
-
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        await update.message.reply_text(
-            f"Mã {site_code} đang thực hiện.\nVui lòng chọn lý do:",
-            reply_markup=reply_markup
-        )
-        return
-
-    # ===== Nếu A hoặc C thì cập nhật luôn =====
-    data = sheet.get_all_values()
-
-    for index, row in enumerate(data):
-        if row[0].strip().lower() == site_code.lower():
-            sheet.update_cell(index + 1, 4, status_map[status_code])
-
+        if len(parts) != 3:
             await update.message.reply_text(
-                f"Đã cập nhật {site_code}:\n{status_map[status_code]}"
+                "Sai cú pháp!\nVui lòng nhập:\nST.[MãSite].[A/B/C]"
             )
             return
 
-    await update.message.reply_text("Không tìm thấy Mã Site.")
-    return
+        site_code = parts[1].strip()
+        status_code = parts[2].strip().upper()
+
+        status_map = {
+            "A": "Chưa thực hiện",
+            "B": "Đang thực hiện",
+            "C": "Hoàn thành"
+        }
+
+        if status_code not in status_map:
+            await update.message.reply_text(
+                "Giá trị tiến độ không hợp lệ!\nChỉ dùng A, B hoặc C."
+            )
+            return
+
+        # ===== Nếu là B thì hỏi thêm lý do =====
+        if status_code == "B":
+
+            keyboard = [
+                [InlineKeyboardButton("Chưa lắp xong", callback_data=f"{site_code}|Chưa lắp xong")],
+                [InlineKeyboardButton("Lỗi lắp đặt", callback_data=f"{site_code}|Lỗi lắp đặt")],
+                [InlineKeyboardButton("Lỗi thiết bị", callback_data=f"{site_code}|Lỗi thiết bị")],
+                [InlineKeyboardButton("Lỗi cấu hình", callback_data=f"{site_code}|Lỗi cấu hình")]
+            ]
+
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            await update.message.reply_text(
+                f"Mã {site_code} đang thực hiện.\nVui lòng chọn lý do:",
+                reply_markup=reply_markup
+            )
+            return
+
+        # ===== Nếu A hoặc C thì cập nhật luôn =====
+        data = sheet.get_all_values()
+
+        for index, row in enumerate(data):
+            if row[0].strip().lower() == site_code.lower():
+                sheet.update_cell(index + 1, 4, status_map[status_code])
+
+                await update.message.reply_text(
+                    f"Đã cập nhật {site_code}:\n{status_map[status_code]}"
+                )
+                return
+
+        await update.message.reply_text("Không tìm thấy Mã Site.")
+        return
 
     # =====================================================
     # ===== 4 TRA CỨU TC.[TênSite]
